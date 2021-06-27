@@ -9,7 +9,7 @@ pipeline{
           steps {
             sh '''
               oc project simple-app
-              oc start-build blue-app --follow --wait
+              oc start-build blueapp --follow --wait
             '''
           }
         }
@@ -26,7 +26,7 @@ pipeline{
           steps {
             sh '''
               oc project simple-app
-              oc start-build green-app --follow --wait
+              oc start-build greenapp --follow --wait
             '''
           }
         }
