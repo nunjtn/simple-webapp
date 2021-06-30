@@ -20,12 +20,10 @@ node('master') {
 
     stage('Docker Image') {
         withDockerRegistry([credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]) {
-            dir('target') {
                 sh """
                     docker build -t "${env.IMAGE_TAG}" .
                     docker push "${env.IMAGE_TAG}"
                 """
-            }
         }
     }
 
