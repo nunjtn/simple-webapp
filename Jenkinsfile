@@ -4,10 +4,6 @@ node('master') {
     def resourceGroup = 'jitti-rg'
     def aks = 'my-aks'
 
-    def cosmosResourceGroup = 'jitti-rg'
-    def cosmosDbName = 'jitti-db'
-    def dbName = 'jitti-db'
-
     def dockerRegistry = 'jittiregistry.azurecr.io'
     def imageName = "todo-app:${env.BUILD_NUMBER}"
     env.IMAGE_TAG = "${dockerRegistry}/${imageName}"
@@ -26,7 +22,6 @@ node('master') {
         withDockerRegistry([credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]) {
             dir('target') {
                 sh """
-                    cp -f ../src/aks/Dockerfile .
                     docker build -t "${env.IMAGE_TAG}" .
                     docker push "${env.IMAGE_TAG}"
                 """
