@@ -1,5 +1,7 @@
-node('master') {
-
+pipeline {
+  agent {
+    node { label "docker" }
+   }
     def servicePrincipalId = 'AZURE'
     def resourceGroup = 'jitti-rg'
     def aks = 'my-aks'
