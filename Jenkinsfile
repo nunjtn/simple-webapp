@@ -6,7 +6,7 @@ node('master') {
 
     def dockerRegistry = 'quay.io'
     def imageName = "todo-app:${env.BUILD_NUMBER}"
-    env.IMAGE_TAG = "${dockerRegistry}/${imageName}"
+    env.IMAGE_TAG = "${dockerRegistry}/jitjiam/${imageName}"
     def dockerCredentialId = 'DOCKER'
 
     def currentEnvironment = 'blue'
