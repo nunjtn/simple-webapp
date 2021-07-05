@@ -4,7 +4,7 @@ node('master') {
     def resourceGroup = 'jitti-rg'
     def aks = 'my-aks'
 
-    def dockerRegistry = 'jittiregistry.azurecr.io'
+    def dockerRegistry = 'quay.io'
     def imageName = "todo-app:${env.BUILD_NUMBER}"
     env.IMAGE_TAG = "${dockerRegistry}/${imageName}"
     def dockerCredentialId = 'DOCKER'
@@ -21,8 +21,8 @@ node('master') {
     stage('Docker Image') {
         withDockerRegistry([credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]) {
                 sh """
-                    sudo docker build -t "${env.IMAGE_TAG}" .
-                    sudo docker push "${env.IMAGE_TAG}"
+                    docker build -t "${env.IMAGE_TAG}" .
+                    docker push "${env.IMAGE_TAG}"
                 """
         }
     }
