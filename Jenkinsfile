@@ -25,7 +25,7 @@ node('master') {
 
     stage('Check Env') {
         // check the current active environment to determine the inactive one that will be deployed to
-        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2']) {
+        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2:8443']) {
             // fetch the current service configuration
             sh """
               curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"
