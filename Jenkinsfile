@@ -30,7 +30,7 @@ node('master') {
             sh """
               curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"
               chmod u+x ./kubectl
-              current_role="\$(./kubectl get services todoapp-service -n greet-ns --output json |  jq -r .spec.selector.role)"
+             // current_role="\$(./kubectl get services todoapp-service -n greet-ns --output json |  jq -r .spec.selector.role)"
               if [ "\$current_role" = null ]; then
                   echo "Unable to determine current environment"
                   exit 1
@@ -50,7 +50,7 @@ node('master') {
 
         // clean the inactive environment
         sh """
-        kubectl --kubeconfig=kubeconfig delete deployment "todoapp-deployment-\$TARGET_ROLE"
+        ./kubectl delete deployment "todoapp-deployment-\$TARGET_ROLE -n greet-ns"
         """
     }
 
