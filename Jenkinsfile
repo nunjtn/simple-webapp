@@ -1,9 +1,5 @@
 node('master') {
 
-    def servicePrincipalId = 'AZURE'
-    def resourceGroup = 'jitti-rg'
-    def aks = 'my-aks'
-
     def dockerRegistry = 'quay.io'
     def imageName = "todo-app:${env.BUILD_NUMBER}"
     env.IMAGE_TAG = "${dockerRegistry}/jitjiam/${imageName}"
@@ -29,11 +25,10 @@ node('master') {
 
     stage('Check Env') {
         // check the current active environment to determine the inactive one that will be deployed to
-
-        withCredentials([azureServicePrincipal(servicePrincipalId)]) {
+        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2']) {
             // fetch the current service configuration
             sh """
-              current_role="\$(kubectl --kubeconfig kubeconfig get services todoapp-service --output json | jq -r .spec.selector.role)"
+              current_role="\$(kubectl get services todoapp-service --output json | jq -r .spec.selector.role)"
               if [ "\$current_role" = null ]; then
                   echo "Unable to determine current environment"
                   exit 1
