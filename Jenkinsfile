@@ -30,7 +30,7 @@ node('master') {
             sh """
               curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"
               chmod u+x ./kubectl
-              ./kubectl get pod
+              current_role="\$(kubectl get services todoapp-service --output json | jq -r .spec.selector.role)"
               if [ "\$current_role" = null ]; then
                   echo "Unable to determine current environment"
                   exit 1
