@@ -49,9 +49,11 @@ node('master') {
         env.TARGET_ROLE = newEnvironment()
 
         // clean the inactive environment
-        sh """
-        ./kubectl delete deployment "todoapp-deployment-\$TARGET_ROLE -n greet-ns"
-        """
+        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2:8443']) {
+           sh """
+           ./kubectl delete deployment "todoapp-deployment-\$TARGET_ROLE -n greet-ns"
+           """
+        }
     }
 
     stage('Deploy') {
