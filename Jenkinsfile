@@ -14,14 +14,14 @@ node('master') {
         checkout scm
     }
 
-    stage('Docker Image') {
-        withDockerRegistry([credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]) {
-                sh """
-                    docker build -t "${env.IMAGE_TAG}" .
-                    docker push "${env.IMAGE_TAG}"
-                """
-        }
-    }
+//    stage('Docker Image') {
+//        withDockerRegistry([credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]) {
+//                sh """
+//                    docker build -t "${env.IMAGE_TAG}" .
+//                    docker push "${env.IMAGE_TAG}"
+ //               """
+  //      }
+ //   }
 
     stage('Check Env') {
         // check the current active environment to determine the inactive one that will be deployed to
