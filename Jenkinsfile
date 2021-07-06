@@ -28,7 +28,9 @@ node('master') {
         withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2']) {
             // fetch the current service configuration
             sh """
-              current_role="\$(kubectl get services todoapp-service --output json)"
+              curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"
+              chmod u+x ./kubectl
+              current_role="\$(./kubectl get services todoapp-service --output json)"
               if [ "\$current_role" = null ]; then
                   echo "Unable to determine current environment"
                   exit 1
