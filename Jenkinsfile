@@ -4,7 +4,7 @@ node('master') {
     def imageName = "todo-app:${env.BUILD_NUMBER}"
     env.IMAGE_TAG = "${dockerRegistry}/jitjiam/${imageName}"
     def dockerCredentialId = 'DOCKER'
-    def clusterip = '192.168.49.2
+    def clusterip = '192.168.49.2'
 
     def currentEnvironment = 'blue'
     def newEnvironment = { ->
