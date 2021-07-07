@@ -50,7 +50,7 @@ node('master') {
         env.TARGET_ROLE = newEnvironment()
 
         // clean the inactive environment
-        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2:8443']) {
+        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://${clusterip}:8443']) {
            sh """
            ./kubectl delete deployment "greet-\$TARGET_ROLE -n greet-ns"
            """
