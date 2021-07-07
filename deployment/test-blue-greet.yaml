@@ -1,14 +1,15 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: todoapp-test-blue
+  name: greet-blue
+  namespace: greet-ns
   labels:
-    app: todoapp
-    role: test-blue
+    app: greet-blue
+    role: blue
 spec:
   type: LoadBalancer
   selector:
-    app: todoapp
+    app: greet-blue
     role: blue
   ports:
     - port: 80

@@ -14,14 +14,14 @@ node('master') {
         checkout scm
     }
 
-//    stage('Docker Image') {
-//        withDockerRegistry([credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]) {
-//                sh """
-//                    docker build -t "${env.IMAGE_TAG}" .
-//                    docker push "${env.IMAGE_TAG}"
- //               """
-  //      }
- //   }
+    stage('Docker Image') {
+        withDockerRegistry([credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]) {
+                sh """
+                    docker build -t "${env.IMAGE_TAG}" .
+                    docker push "${env.IMAGE_TAG}"
+                """
+        }
+    }
 
     stage('Check Env') {
         // check the current active environment to determine the inactive one that will be deployed to
@@ -60,13 +60,11 @@ node('master') {
         // Apply the deployments to AKS.
         // With enableConfigSubstitution set to true, the variables ${TARGET_ROLE}, ${IMAGE_TAG}, ${KUBERNETES_SECRET_NAME}
         // will be replaced with environment variable values
-        acsDeploy azureCredentialsId: servicePrincipalId,
-                  resourceGroupName: resourceGroup,
-                  containerService: "${aks} | AKS",
-                  configFilePaths: 'src/aks/deployment.yml',
-                  enableConfigSubstitution: true,
-                  secretName: dockerRegistry,
-                  containerRegistryCredentials: [[credentialsId: dockerCredentialId, url: "http://${dockerRegistry}"]]
+        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2:8443']) {
+           sh """
+           ./kubectl create deployment "todoapp-deployment-\$TARGET_ROLE --image=${env.IMAGE_TAG} -n greet-ns"
+           """
+        }
     }
 
     def verifyEnvironment = { service ->

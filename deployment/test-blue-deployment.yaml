@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greet-blue
+  namespace: greet-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greet-blue
+  template:
+    metadata:
+      labels:
+        app: greet-blue
+    spec:
+      containers:
+      - name: greet-blue
+        image: quay.io/jitjiam/todo-app:26
+        ports:
+        - containerPort: 8080

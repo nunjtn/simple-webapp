@@ -8,5 +8,5 @@ RUN npm ci --production
 # Copy app
 COPY . /app
 
-EXPOSE 3000
+EXPOSE 8080
 ENTRYPOINT [ "npm", "start" ]
