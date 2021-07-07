@@ -4,6 +4,7 @@ node('master') {
     def imageName = "todo-app:${env.BUILD_NUMBER}"
     env.IMAGE_TAG = "${dockerRegistry}/jitjiam/${imageName}"
     def dockerCredentialId = 'DOCKER'
+    def clusterip = '192.168.49.2
 
     def currentEnvironment = 'blue'
     def newEnvironment = { ->
@@ -25,7 +26,7 @@ node('master') {
 
     stage('Check Env') {
         // check the current active environment to determine the inactive one that will be deployed to
-        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2:8443']) {
+        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://${clusterip}:8443']) {
             // fetch the current service configuration
             sh """
               curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"
@@ -51,7 +52,7 @@ node('master') {
         // clean the inactive environment
         withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2:8443']) {
            sh """
-           ./kubectl delete deployment "todoapp-deployment-\$TARGET_ROLE -n greet-ns"
+           ./kubectl delete deployment "greet-\$TARGET_ROLE -n greet-ns"
            """
         }
     }
@@ -60,16 +61,16 @@ node('master') {
         // Apply the deployments to AKS.
         // With enableConfigSubstitution set to true, the variables ${TARGET_ROLE}, ${IMAGE_TAG}, ${KUBERNETES_SECRET_NAME}
         // will be replaced with environment variable values
-        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://192.168.49.2:8443']) {
+        withKubeConfig([credentialsId: 'JENKINS', serverUrl: 'https://${clusterip}:8443']) {
            sh """
-           ./kubectl create deployment "todoapp-deployment-\$TARGET_ROLE --image=${env.IMAGE_TAG} -n greet-ns"
+           ./kubectl create deployment "greet-\$TARGET_ROLE --image=${env.IMAGE_TAG} -n greet-ns"
            """
         }
     }
 
     def verifyEnvironment = { service ->
         sh """
-          endpoint_ip="\$(kubectl --kubeconfig=kubeconfig get services '${service}' --output json | jq -r '.status.loadBalancer.ingress[0].ip')"
+          endpoint_ip="\$(./kubectl get services '${service}' --output json -n greet-ns | jq -r '.spec.ports[0].nodePort')"
           count=0
           while true; do
               count=\$(expr \$count + 1)
@@ -88,18 +89,14 @@ node('master') {
 
     stage('Verify Staged') {
         // verify the deployment through the corresponding test endpoint
-        verifyEnvironment("todoapp-test-${newEnvironment()}")
+        verifyEnvironment("greet-${newEnvironment()}")
     }
 
     stage('Switch') {
         // Update the production service endpoint to route to the new environment.
         // With enableConfigSubstitution set to true, the variables ${TARGET_ROLE}
         // will be replaced with environment variable values
-        acsDeploy azureCredentialsId: servicePrincipalId,
-                  resourceGroupName: resourceGroup,
-                  containerService: "${aks} | AKS",
-                  configFilePaths: 'src/aks/service.yml',
-                  enableConfigSubstitution: true
+
     }
 
     stage('Verify Prod') {
